@@ -1,3 +1,4 @@
+package com.sevak_avet.ScheduleParser;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

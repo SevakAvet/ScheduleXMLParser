@@ -1,3 +1,4 @@
+package com.sevak_avet.ScheduleParser;
 import javax.naming.OperationNotSupportedException;
 
 public class ScheduleMarkup {
