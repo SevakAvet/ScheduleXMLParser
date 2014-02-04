@@ -1,8 +1,10 @@
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.naming.OperationNotSupportedException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -10,64 +12,16 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.SAXException;
 
 public class Main {
-	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
-		DOMParser dp = new DOMParser();
-		String[][] table = DOMParser.parse(new File("schedule_do_151.xml"));
-
-		String[][] numerator = getEmptyTable();
-		String[][] denominator = getEmptyTable();
-
-		boolean isNumerator = false;
-		boolean isDenominator = false;
-
-		for (int i = 0; i < 8; ++i) {
-			for (int j = 0; j < 6; ++j) {
-				String s = table[i][j];
-
-				isNumerator = isDenominator = false;
-				System.out.println(s);
-
-				if (s.contains("чис.")) {
-					isNumerator = true;
-				}
-
-				if (s.contains("знам.")) {
-					isDenominator = true;
-				}
-
-				if (!s.isEmpty()) {					
-					if (isNumerator) {
-						if (isDenominator) {
-							int denomIndex = s.indexOf("знам.");
-							numerator[i][j] = s.substring(4, denomIndex);
-							denominator[i][j] = s.substring(denomIndex + 5, s.length());
-						} else {
-							numerator[i][j] = s.substring(4, s.length());
-						}
-					} else {
-						if(isDenominator) {
-							denominator[i][j] = s.substring(5, s.length());
-						} else {
-							numerator[i][j] = s;
-							denominator[i][j] = s;
-						}
-					}
-				}
-			}
-		}		
+	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException, OperationNotSupportedException {
+		DOMParser dp = DOMParser.getInstance();
+		URL scheduleURL = new URL("http://www.sgu.ru/schedule/knt/do/151/lesson");
+		String scheduleFilePath = new File(".").getAbsolutePath() + "schedule.xls";
+		String[][] table = dp.parse(scheduleURL, scheduleFilePath);	
 		
-		VKWikiMarkup.printTable(denominator);
+		ScheduleMarkup vk = new ScheduleMarkup(table, 
+				new Object[]{"Сентябрь", 1, 1, 1, 1, "Сентябрь", 1, 1, 1, 1, "Сентябрь", 1, 1, 1, 1, "Сентябрь", 1, 1, 1, 1},
+				new Object[]{"Сентябрь", 1, 1, 1, 1, "Сентябрь", 1, 1, 1, 1, "Сентябрь", 1, 1, 1, 1, "Сентябрь", 1, 1, 1, 1});
+		System.out.println(vk.getSchedule());
 	}
 
-	private static String[][] getEmptyTable() {
-		String[][] table = new String[8][6];
-
-		for (int i = 0; i < table.length; ++i) {
-			for (int j = 0; j < table[i].length; ++j) {
-				table[i][j] = "";
-			}
-		}
-
-		return table;
-	}
 }
